@@ -1,8 +1,11 @@
 import cv2
 from cvzone.HandTrackingModule import HandDetector
+import numpy as np
 
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands = 1)
+offset = 20
+imgSize = 300
 
 while True:
     success, img = cap.read()
@@ -10,8 +13,12 @@ while True:
     if hands:
         hands = hands[0]
         x, y, w, h = hands['bbox']
-        imgCrop = img[y:y + h, x:x + w]
+
+        imgWhite = np.ones((imgSize, imgSize, 3), np.uint8)*255    
+        imgCrop = img[y-offset:y + h+offset, x-offset:x + w+offset]
+        
         cv2.imshow("ImageCrop", imgCrop)
+        cv2.imshow("ImageWhite", imgWhite)
 
     cv2.imshow("Image", img)
     cv2.waitKey(1)
