@@ -16,7 +16,11 @@ while True:
 
         imgWhite = np.ones((imgSize, imgSize, 3), np.uint8)*255    
         imgCrop = img[y-offset:y + h+offset, x-offset:x + w+offset]
-        
+
+        imgCropShape = imgCrop.shape
+
+        imgWhite[0:imgCropShape[0], 0:imgCropShape[1]] = imgCrop
+
         cv2.imshow("ImageCrop", imgCrop)
         cv2.imshow("ImageWhite", imgWhite)
 
