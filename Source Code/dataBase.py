@@ -16,13 +16,15 @@ labels = ["A", "B", "C"]
 
 while True:
     success, img = cap.read()
-    hands, img = detector.findHands(img)
+    imgOutput = img.copy()
+    hands = detector.findHands(img, draw = False)
+
     if hands:
         hands = hands[0]
         x, y, w, h = hands['bbox']
 
         imgWhite = np.ones((imgSize, imgSize, 3), np.uint8)*255    
-        imgCrop = img[y-offset:y + h+offset, x-offset:x + w+offset]
+        imgCrop = img[y - offset:y + h + offset, x - offset:x + w + offset]
 
         imgCropShape = imgCrop.shape
 
@@ -35,7 +37,8 @@ while True:
             imgResizeShape = imgResize.shape
             wGap = math.ceil((imgSize - wCal) / 2)
             imgWhite[:, wGap: wCal + wGap] = imgResize
-            prediction, index = classifier.getPrediction(img)
+            prediction, index = classifier.getPrediction(imgWhite)
+            print(prediction, index)
 
         else:
             k = imgSize / w
@@ -44,14 +47,12 @@ while True:
             imgResizeShape = imgResize.shape
             hGap = math.ceil((imgSize - hCal) / 2)
             imgWhite[hGap : hCal + hGap, :] = imgResize
+            prediction, index = classifier.getPrediction(img)
+
+        cv2.putText(imgOutput, labels[index], (x,y-20),cv2.FONT_HERSHEY_COMPLEX, 2, (255, 0, 255), 2)         
 
         cv2.imshow("ImageCrop", imgCrop)
         cv2.imshow("ImageWhite", imgWhite)
 
-    cv2.imshow("Image", img)
+    cv2.imshow("Image", imgOutput)
     key = cv2.waitKey(1)
-
-    if key == ord("s"):
-        counter += 1
-        cv2.imwrite(f'{folder}/Image_{time.time()}.jpg', imgWhite)
-        print(counter)
