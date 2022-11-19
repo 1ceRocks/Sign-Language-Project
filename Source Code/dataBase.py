@@ -1,4 +1,5 @@
 import cv2, math, time
+from cvzone.ClassificationModule import Classifier
 from cvzone.HandTrackingModule import HandDetector
 import numpy as np
 
@@ -9,6 +10,9 @@ imgSize = 300
 counter  = 0
 
 folder = 'Data/C'
+classifier = Classifier("Model/keras_model.h5", "Model/labels.txt")
+
+labels = ["A", "B", "C"]
 
 while True:
     success, img = cap.read()
@@ -31,6 +35,7 @@ while True:
             imgResizeShape = imgResize.shape
             wGap = math.ceil((imgSize - wCal) / 2)
             imgWhite[:, wGap: wCal + wGap] = imgResize
+            prediction, index = classifier.getPrediction(img)
 
         else:
             k = imgSize / w
